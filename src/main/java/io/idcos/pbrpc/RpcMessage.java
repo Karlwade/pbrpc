@@ -8,77 +8,78 @@ import com.google.protobuf.RpcCallback;
 import sofa.pbrpc.SofaRpcMeta.RpcMeta;
 
 public class RpcMessage {
-	private RpcMeta reqmeta;
-	private RpcMeta resmeta;
-	private Message request;
-	private Message response;
-	private long sequenceId;
-	private String method;
-	private RpcCallback<Message> done;
-	private AtomicBoolean complete;
-	public RpcMessage() {
-		complete = new AtomicBoolean();
-		complete.set(false);
-	}
+    private RpcMeta reqmeta;
+    private RpcMeta resmeta;
+    private Message request;
+    private Message response;
+    private long sequenceId;
+    private String method;
+    private RpcCallback<Message> done;
+    private AtomicBoolean complete;
 
-	public AtomicBoolean getComplete() {
-		return complete;
-	}
+    public RpcMessage() {
+        complete = new AtomicBoolean();
+        complete.set(false);
+    }
 
-	public RpcCallback<Message> getDone() {
-		return done;
-	}
+    public AtomicBoolean getComplete() {
+        return complete;
+    }
 
-	public void setDone(RpcCallback<Message> done) {
-		this.done = done;
-	}
+    public RpcCallback<Message> getDone() {
+        return done;
+    }
 
-	public long getSequenceId() {
-		return sequenceId;
-	}
+    public void setDone(RpcCallback<Message> done) {
+        this.done = done;
+    }
 
-	public void setSequenceId(long sequenceId) {
-		this.sequenceId = sequenceId;
-	}
-	
-	public String getMethod() {
-		return method;
-	}
+    public long getSequenceId() {
+        return sequenceId;
+    }
 
-	public void setMethod(String method) {
-		this.method = method;
-	}
+    public void setSequenceId(long sequenceId) {
+        this.sequenceId = sequenceId;
+    }
 
-	public RpcMeta getReqmeta() {
-		return reqmeta;
-	}
+    public String getMethod() {
+        return method;
+    }
 
-	public void setReqmeta(RpcMeta reqmeta) {
-		this.reqmeta = reqmeta;
-	}
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
-	public RpcMeta getResmeta() {
-		return resmeta;
-	}
+    public RpcMeta getReqmeta() {
+        return reqmeta;
+    }
 
-	public void setResmeta(RpcMeta resmeta) {
-		this.resmeta = resmeta;
-	}
+    public void setReqmeta(RpcMeta reqmeta) {
+        this.reqmeta = reqmeta;
+    }
 
-	public Message getRequest() {
-		return request;
-	}
+    public RpcMeta getResmeta() {
+        return resmeta;
+    }
 
-	public void setRequest(Message request) {
-		this.request = request;
-	}
+    public void setResmeta(RpcMeta resmeta) {
+        this.resmeta = resmeta;
+    }
 
-	public Message getResponse() {
-		return response;
-	}
+    public Message getRequest() {
+        return request;
+    }
 
-	public void setResponse(Message response) {
-		this.response = response;
-	}
+    public void setRequest(Message request) {
+        this.request = request;
+    }
+
+    public Message getResponse() {
+        return response;
+    }
+
+    public void setResponse(Message response) {
+        this.response = response;
+    }
 
 }

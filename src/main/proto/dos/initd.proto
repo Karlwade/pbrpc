@@ -1,0 +1,50 @@
+import "dos/dos.proto";
+
+package dos;
+
+option cc_generic_services = true;
+option py_generic_services = true;
+
+option java_generic_services = true;
+option java_package = "io.dcos.dos";
+option java_outer_classname = "InitdServer";
+
+message ForkRequest {
+  optional Process process = 1;
+}
+
+message ForkResponse {
+  optional RpcStatus status = 1;
+}
+
+message WaitRequest {
+  repeated string names = 1;
+}
+
+message WaitResponse {
+  repeated Process processes = 1;
+  optional RpcStatus status = 2;
+}
+
+message KillRequest {
+  repeated string names = 1;
+  optional int32 signal = 2;
+}
+
+message KillResponse { 
+  optional RpcStatus status = 1;
+}
+
+message StatusRequest {}
+
+message StatusResponse {
+  optional RpcStatus status = 1;  
+}
+
+service Initd {
+  rpc Fork(ForkRequest) returns (ForkResponse);
+  rpc Wait(WaitRequest) returns (WaitResponse);
+  rpc Kill(KillRequest) returns (KillResponse);
+  rpc Status(StatusRequest) returns (StatusResponse);
+}
+

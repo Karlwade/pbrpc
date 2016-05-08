@@ -1,0 +1,242 @@
+import "file.proto";
+import "status_code.proto";
+
+package baidu.bfs;
+
+option cc_generic_services = true;
+option java_generic_services = true;
+option java_package = "com.baidu.bfs.proto";
+option java_outer_classname = "BfsNameServer";
+
+message CreateFileRequest {
+    optional int64 sequence_id = 1;
+    optional string file_name = 2;
+    optional int32 mode = 3;
+    optional int32 flags = 4;
+    optional int32 replica_num = 5;
+    optional string user = 7;
+}
+
+message CreateFileResponse {
+    optional int64 sequence_id = 1;
+    required StatusCode status = 2;
+}
+
+message LocatedBlock {
+    required int64 block_id = 1;
+    optional int64 block_size = 2;
+    repeated ChunkServerInfo chains = 3;
+}
+
+message FileLocationRequest {
+    required int64 sequence_id = 1;
+    required string file_name = 2;
+    optional int64 offset = 3;
+    optional int32 block_num = 4 [default = 10];
+    optional string user = 5;
+}
+
+message FileLocationResponse {
+    required int64 sequence_id = 1;
+    required StatusCode status = 2;
+    repeated LocatedBlock blocks = 3;
+}
+
+message ListDirectoryRequest {
+    required int64 sequence_id = 1;
+    required string path = 2;
+}
+message ListDirectoryResponse {
+    required int64 sequence_id = 1;
+    required StatusCode status = 2;
+    repeated FileInfo files = 3;
+}
+
+message StatRequest {
+    optional int64 sequence_id = 1;
+    required string path = 2;
+}
+message StatResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+    optional FileInfo file_info = 3;
+}
+
+message RenameRequest {
+    optional int64 sequence_id = 1;
+    required string oldpath = 2;
+    required string newpath = 3;
+}
+message RenameResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message AddBlockRequest {
+    required int64 sequence_id = 1;
+    required string file_name = 2;
+    optional string client_address = 3;
+}
+message AddBlockResponse {
+    required int64 sequence_id = 1;
+    optional StatusCode status = 2;
+    optional LocatedBlock block = 3;
+}
+
+message FinishBlockRequest {
+    optional int64 sequence_id = 1;
+    optional int64 block_id = 2;
+    optional int64 block_version = 3;
+    optional string file_name = 4;
+    optional int64 block_size = 5;
+}
+message FinishBlockResponse {
+    required int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message UnlinkRequest {
+    required int64 sequence_id = 1;
+    required string path = 2;
+}
+message UnlinkResponse {
+    required int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message DeleteDirectoryRequest {
+    required int64 sequence_id = 1;
+    required string path = 2;
+    required bool recursive = 3;
+}
+message DeleteDirectoryResponse {
+    required int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message ChangeReplicaNumRequest {
+    optional int64 sequence_id = 1;
+    required string file_name = 2;
+    required int32 replica_num = 3;
+}
+message ChangeReplicaNumResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message HeartBeatRequest {
+    optional int64 sequence_id = 1;
+    optional string chunkserver_addr = 2;
+    optional int32 chunkserver_id = 3;
+    optional int64 namespace_version = 4;
+    optional int32 block_num = 5;
+    optional int64 data_size = 6;
+    optional int32 buffers = 7;
+    optional int32 pending_writes = 13;
+    optional int32 w_qps = 8;
+    optional int64 w_speed = 9;
+    optional int32 r_qps = 10;
+    optional int64 r_speed = 11;
+    optional int64 recover_speed = 12;
+}
+message HeartBeatResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+    optional int64 namespace_version = 3;
+    optional bool kick = 4;
+}
+
+message ReportBlockInfo {
+    optional int64 block_id = 1;
+    optional int64 version = 2;
+    optional int64 block_size = 3;
+}
+message ReplicaInfo {
+    optional int64 block_id = 1;
+    repeated string chunkserver_address = 2;
+    //optional int64 block_size = 3;
+    //optional int64 block_version = 4;
+    optional bool priority = 5;
+}
+
+message RegisterRequest {
+    optional int64 sequence_id = 1;
+    optional string chunkserver_addr = 3;
+    optional int64 namespace_version = 4;
+    optional int64 disk_quota = 7;
+}
+message RegisterResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+    optional int32 chunkserver_id = 5;
+    optional int64 namespace_version = 6;
+}
+
+message BlockReportRequest {
+    optional int64 sequence_id = 1;
+    optional int32 chunkserver_id = 2;
+    optional string chunkserver_addr = 3;
+    repeated ReportBlockInfo blocks = 6;
+}
+message BlockReportResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+    repeated int64 obsolete_blocks = 3;
+    repeated int64 close_blocks = 4;
+    repeated ReplicaInfo new_replicas = 5;
+}
+
+message BlockReceivedRequest {
+    optional int64 sequence_id = 1;
+    optional int32 chunkserver_id = 2;
+    optional string chunkserver_addr = 3;
+    repeated ReportBlockInfo blocks = 6;
+}
+
+message BlockReceivedResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message PushBlockReportRequest {
+    optional int64 sequence_id = 1;
+    optional int32 chunkserver_id = 2;
+    repeated int64 blocks = 3;
+}
+message PushBlockReportResponse {
+    optional int64 sequence_id = 1;
+    optional StatusCode status = 2;
+}
+
+message SysStatRequest {
+    optional string stat_name = 2;
+}
+
+message SysStatResponse {
+    optional StatusCode status = 2;
+    repeated ChunkServerInfo chunkservers = 3;
+    optional int64 block_num = 4;
+    optional int64 data_size = 5;
+}
+
+service NameServer {
+    rpc CreateFile(CreateFileRequest) returns(CreateFileResponse);
+    rpc AddBlock(AddBlockRequest) returns(AddBlockResponse);
+    rpc GetFileLocation(FileLocationRequest) returns(FileLocationResponse);
+    rpc ListDirectory(ListDirectoryRequest) returns(ListDirectoryResponse);
+    rpc Stat(StatRequest) returns(StatResponse);
+    rpc Rename(RenameRequest) returns(RenameResponse);
+    rpc FinishBlock(FinishBlockRequest) returns(FinishBlockResponse);
+    rpc Unlink(UnlinkRequest) returns(UnlinkResponse);
+    rpc DeleteDirectory(DeleteDirectoryRequest) returns(DeleteDirectoryResponse);
+    rpc ChangeReplicaNum(ChangeReplicaNumRequest) returns(ChangeReplicaNumResponse);
+
+    rpc Register(RegisterRequest) returns(RegisterResponse);
+    rpc HeartBeat(HeartBeatRequest) returns(HeartBeatResponse);
+    rpc BlockReport(BlockReportRequest) returns(BlockReportResponse);
+    rpc BlockReceived(BlockReceivedRequest) returns(BlockReceivedResponse);
+    rpc PushBlockReport(PushBlockReportRequest) returns(PushBlockReportResponse);
+
+    rpc SysStat(SysStatRequest) returns(SysStatResponse);
+}
+

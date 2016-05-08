@@ -1,0 +1,83 @@
+package dos;
+import "dos/dos.proto";
+
+
+option cc_generic_services = true;
+option py_generic_services = true;
+
+option java_generic_services = true;
+option java_package = "io.dcos.dos";
+option java_outer_classname = "EngineServer";
+
+message RunContainerRequest {
+  optional string name = 1;
+  optional Container container = 2;
+}
+
+message RunContainerResponse {
+  optional RpcStatus status = 1;
+}
+
+message ContainerOverview {
+  optional string name = 1;
+  optional int64 start_time = 2;
+  optional ContainerState state =3;
+  optional ContainerType type = 4;
+  optional int64 boot_time = 5;
+  optional int64 cpu_sys_used = 6;
+  optional int64 cpu_user_used = 7;
+  optional int64 restart_count = 8;
+  optional int64 mem_cache_used = 9;
+  optional int64 mem_rss_used = 10;
+  optional int64 cpu_idle = 11;
+}
+
+message ShowContainerRequest {
+  repeated string names = 1;
+}
+
+message ShowContainerResponse {
+  optional RpcStatus status = 1;
+  repeated ContainerOverview containers = 2;
+}
+
+message ShowCLogRequest {
+  optional string name = 1;
+}
+
+message ShowCLogResponse {
+  repeated ContainerLog logs = 1;
+  optional RpcStatus status = 2;
+}
+
+message GetInitdRequest {
+  optional string name = 1;
+}
+
+message GetInitdResponse {
+  optional int32 pid = 1; 
+  optional string endpoint = 2;
+  optional string rootfs = 3;
+  optional RpcStatus status = 4;
+}
+
+// update container with new configuration
+message UpdateContainerRequest {}
+message UpdateContainerResponse {}
+
+// stop container and move the workspace to gcdir
+message DeleteContainerRequest {
+  optional string name = 1;  
+}
+
+message DeleteContainerResponse {
+  optional RpcStatus status = 2;
+}
+
+service Engine {
+  rpc RunContainer(RunContainerRequest) returns(RunContainerResponse);
+  rpc ShowContainer(ShowContainerRequest) returns(ShowContainerResponse);
+  rpc ShowCLog(ShowCLogRequest) returns(ShowCLogResponse);
+  rpc GetInitd(GetInitdRequest) returns(GetInitdResponse);
+  rpc DeleteContainer(DeleteContainerRequest) returns(DeleteContainerResponse);
+}

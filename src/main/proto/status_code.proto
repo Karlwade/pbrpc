@@ -1,0 +1,43 @@
+package baidu.bfs;
+option java_package = "com.baidu.bfs.proto";
+option java_outer_classname = "BfsStatusCode";
+
+enum StatusCode {
+    kOK = 0;
+    kNotOK = 1;
+    kUnknownCs = 2;
+    kVersionError = 3;
+    kNotFound = 4;
+    kBlockExist = 14;
+    kSyncMetaFailed = 15;
+    kWriteError = 5;
+    kBlockClosed = 13;
+    kReadError = 6;
+    kBadParameter = 7;
+    kUpdateError = 8;
+    kGetChunkserverError = 9;
+    kNsCreateError = 10;
+    kCsCreateError = 11;
+    kCsTooMuchPendingBuffer = 12;
+    kReadOnly = 16;
+    kSafeMode = 20;
+}
+
+enum ChunkServerStatus {
+    kCsActive = 101;
+    kCsWaitClean = 102;
+    kCsCleaning = 103;
+    kCsOffLine = 104;
+    kCsStandby = 105;
+}
+
+enum RecoverStat {
+    kNotInRecover = 0;
+    kLoRecover = 1;
+    kHiRecover = 2;
+    kCheck = 3;
+    kIncomplete = 4;
+    kLost = 5;
+    kBlockWriting = 6;
+    kAny = 20;
+}

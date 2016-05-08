@@ -1,0 +1,38 @@
+import "dos/dos.proto";
+package dos;
+
+option cc_generic_services = true;
+option py_generic_services = true;
+
+option java_generic_services = true;
+option java_package = "io.dcos.dos";
+option java_outer_classname = "AgentServer";
+
+message PollAgentRequest {}
+
+message PollAgentResponse {
+  optional NodeStatus status = 1;  
+}
+
+message RunPodRequest {
+  optional string pod_name = 1;
+  optional PodSpec pod = 3;
+}
+
+message RunPodResponse {
+  optional RpcStatus status = 1;  
+}
+
+message DeletePodRequest {
+  optional string name = 1;
+}
+
+message DeletePodResponse {
+  optional RpcStatus status = 1;
+}
+
+service Agent {
+  rpc Poll(PollAgentRequest) returns (PollAgentResponse);
+  rpc Run(RunPodRequest) returns (RunPodResponse);
+  rpc Delete(DeletePodRequest) returns (DeletePodResponse);
+}

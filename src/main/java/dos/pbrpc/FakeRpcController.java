@@ -1,4 +1,4 @@
-package io.idcos.pbrpc;
+package dos.pbrpc;
 
 import com.google.protobuf.RpcCallback;
 import com.google.protobuf.RpcController;

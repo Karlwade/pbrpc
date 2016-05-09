@@ -1,6 +1,6 @@
-package io.idcos.pbrpc;
+package dos.pbrpc;
 
-import io.idcos.pbrpc.RpcMessage;
+import dos.pbrpc.RpcMessage;
 
 /**
  * rpc connection interface which sends message and records traffic

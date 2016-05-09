@@ -1,4 +1,4 @@
-package io.idcos.pbrpc;
+package dos.pbrpc;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

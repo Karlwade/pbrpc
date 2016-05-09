@@ -1,4 +1,4 @@
-package io.idcos.pbrpc;
+package dos.pbrpc;
 
 import java.nio.ByteOrder;
 import java.util.List;

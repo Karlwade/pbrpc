@@ -4,13 +4,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.protobuf.ServiceException;
 
+import dos.pbrpc.FakeRpcController;
+import dos.pbrpc.NettyConnection;
+import dos.pbrpc.SyncRpcChannel;
 import io.dcos.dos.MasterServer;
 import io.dcos.dos.MasterServer.GetJobRequest;
 import io.dcos.dos.MasterServer.GetJobResponse;
 import io.dcos.dos.MasterServer.Master.BlockingInterface;
-import io.idcos.pbrpc.FakeRpcController;
-import io.idcos.pbrpc.NettyConnection;
-import io.idcos.pbrpc.SyncRpcChannel;
 
 public class TestDosMaster {
 

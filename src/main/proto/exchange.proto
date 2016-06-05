@@ -1,0 +1,27 @@
+option java_package = "dos.parallel";
+
+option java_outer_classname = "ExchangeDescriptor";
+
+enum ExchangeType {
+	kTask = 0;
+	kDone = 1;
+}
+
+message Exchange {
+    // for both
+    optional int64 sequence = 1;
+    // for task
+    optional string class = 2;
+	optional string method = 3;
+	repeated bytes arguments = 4;
+	// for done
+	optional bytes result = 5;
+	optional int32 error_code = 6;
+	
+	optional ExchangeType type = 7; 
+	
+	// for client
+	optional bool done = 8;
+}
+
+

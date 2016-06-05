@@ -28,6 +28,11 @@
 		<artifactId>jcl-over-slf4j</artifactId>
 		<version>${jcl.slf4j.version}</version>
 	</dependency>
+	<dependency>
+    <groupId>org.mapdb</groupId>
+    <artifactId>mapdb</artifactId>
+    <version>3.0.0-M6</version>
+</dependency>
 <dependency>
   <groupId>org.slf4j</groupId>
   <artifactId>slf4j-ext</artifactId>

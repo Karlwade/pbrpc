@@ -5,6 +5,7 @@ option java_outer_classname = "ExchangeDescriptor";
 enum ExchangeType {
 	kTask = 0;
 	kDone = 1;
+	kStatus = 2;
 }
 
 message Exchange {

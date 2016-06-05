@@ -18,19 +18,12 @@ public class TestServer2 {
          
          Point point2 = new Point();
          point2.setLocation(2, 2);
-         
-         Future<Point> ret = engine2.submit(CalculateDistanceService.class,  "calc", new Object[]{point1, point2});
-         try {
-            Point result = ret.get();
-            System.out.println(result.getX());
-            System.out.println(result.getY());
-        } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (ExecutionException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+         boolean running = true;
+         long cout  = 1000000;
+         while (cout > 0 ) {
+             Future<Point> ret = engine2.submit(CalculateDistanceService.class,  "calc", new Object[]{point1, point2});
+             cout--;
+         }
          engine2.close();
      }
 

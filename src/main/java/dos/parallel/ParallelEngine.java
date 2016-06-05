@@ -1,13 +1,23 @@
 package dos.parallel;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ByteString.Output;
@@ -18,9 +28,12 @@ import dos.parallel.ExchangeDescriptor.ExchangeType;
 import dos.parallel.client.ClientConnection;
 import dos.parallel.client.ClientExchange;
 import dos.parallel.server.ServerExchange;
+import io.netty.channel.ChannelHandlerContext;
 
-public class ParallelEngine implements IDoneCallback{
+public class ParallelEngine implements IDoneCallback, ITaskProcessor{
     
+    private static final Logger logger = LoggerFactory.getLogger(ParallelEngine.class);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ReentrantLock lock = new ReentrantLock();
     private AtomicLong gSequence = new AtomicLong(0);
     
@@ -32,6 +45,31 @@ public class ParallelEngine implements IDoneCallback{
     
     private ServerExchange serverExchange = null;
     
+    private ExecutorService executor = Executors.newFixedThreadPool(6);
+    
+    private final AtomicLong taskRunning = new AtomicLong(0); 
+    private final AtomicLong taskCompleted = new AtomicLong(0); 
+    
+    private final AtomicLong lastTaskCompleted = new  AtomicLong(0); 
+    
+    public ParallelEngine() {
+        logStatus();
+    }
+    
+    private void logStatus() {
+        Runnable logStatusTask = new Runnable(){
+
+            @Override
+            public void run() {
+               long current  = taskCompleted.get();
+               long qps = current - lastTaskCompleted.get();
+               lastTaskCompleted.set(current);
+               logger.info("engine with qps {} and running task {}", qps, taskRunning.get());
+            }};
+          
+        scheduler.scheduleWithFixedDelay(logStatusTask, 0,1000, TimeUnit.MILLISECONDS);
+    }
+    
     public void addNodes(String host, int port) {
         String endpoint = host + ":" + port;
         if (clients.containsKey(endpoint)) {
@@ -41,13 +79,14 @@ public class ParallelEngine implements IDoneCallback{
         nodeInfo.setHost(host);
         nodeInfo.setLoad(0.0);
         nodeInfo.setPort(port);
-        ClientConnection conn = new ClientConnection(this);
+        ClientConnection conn = new ClientConnection(this, this);
         nodeInfo.setConn(conn);
+        conn.build(host, port);
         this.clients.put(endpoint, nodeInfo);
     }
     
     public void bootServer(String host, int port) {
-        serverExchange = new ServerExchange(this);
+        serverExchange = new ServerExchange(this, this);
         serverExchange.build(host, port);
     } 
     
@@ -57,6 +96,7 @@ public class ParallelEngine implements IDoneCallback{
             lock.lock();
             ClientExchange client = this.outBuffer.get(seq);
             client.setDoneExchange(exchange);
+            this.outBuffer.remove(seq);
             lock.unlock();
             synchronized (client.getExchange()) {
                 client.getDone().set(true);
@@ -66,10 +106,10 @@ public class ParallelEngine implements IDoneCallback{
         }
     }
     
-    public <T> Future<T> submit(Class iface, Method method, Object[] args) {
+    public <T> Future<T> submit(Class iface, String method, Object[] args) {
         Builder builder = Exchange.newBuilder();
         builder.setClass_(iface.getCanonicalName());
-        builder.setMethod(method.getName());
+        builder.setMethod(method);
         builder.setSequence(gSequence.incrementAndGet());
         builder.setType(ExchangeType.kTask);
         for (int i = 0; i < args.length; i++) {
@@ -88,12 +128,97 @@ public class ParallelEngine implements IDoneCallback{
         try {
             lock.lock();
             this.outBuffer.put(clientExchange.getExchange().getSequence(), clientExchange);
-            NodeInfo nodeInfo = clients.get(0);
+            NodeInfo nodeInfo = clients.get(clients.keySet().iterator().next());
             nodeInfo.getConn().submit(clientExchange.getExchange());
         } finally {
             lock.unlock();
         }
         return future;
+    }
+
+    @Override
+    public void process(final ChannelHandlerContext ctx, final Exchange exchange) {
+        executor.submit(new Runnable(){
+            @Override
+            public void run() {
+                taskRunning.incrementAndGet();
+                logger.info("process exchange from {} with exchange {}", ctx.name(), exchange);
+                try {
+                    Class serviceCLazz = Class.forName(exchange.getClass_());
+                    Method[] allmethod = serviceCLazz.getDeclaredMethods();
+                    for (Method m : allmethod) {
+                        if (m.getName().equals(exchange.getMethod())) {
+                            logger.info("process exchange with method {}", m);
+                            Object[] args = getArguments(exchange);
+                            Object ret = m.invoke(serviceCLazz.newInstance(), args);
+                            Builder builder = Exchange.newBuilder();
+                            Output out = ByteString.newOutput();
+                            ObjectOutputStream oos = new ObjectOutputStream(out);
+                            oos.writeObject(ret);
+                            builder.setResult(out.toByteString());
+                            builder.setDone(true);
+                            builder.setType(ExchangeType.kDone);
+                            builder.setErrorCode(0);
+                            builder.setSequence(exchange.getSequence());
+                            Exchange done = builder.build();
+                            ctx.channel().writeAndFlush(done);
+                        }
+                    }
+                    taskRunning.decrementAndGet();
+                    taskCompleted.incrementAndGet();
+                } catch (InstantiationException e) {
+                    
+                } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
+            }
+            
+        });
+        
+    }
+    
+    private Object[] getArguments(Exchange exchange) {
+        Object[] arguments = new Object[exchange.getArgumentsCount()];
+        for (int i = 0; i < exchange.getArgumentsCount(); i++) {
+            try {
+                ObjectInputStream ois = new ObjectInputStream(exchange.getArguments(i).newInput());
+                arguments[i] = ois.readObject();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return arguments;
+        
+    }
+    
+    
+    public void close() {
+        if (serverExchange != null) {
+            serverExchange.close();
+        }
+        Iterator<String> it = clients.keySet().iterator();
+        while (it.hasNext()) {
+            String endpoint = it.next();
+            NodeInfo nodeInfo = clients.get(endpoint);
+            nodeInfo.getConn().close();
+        }
     }
     
 }

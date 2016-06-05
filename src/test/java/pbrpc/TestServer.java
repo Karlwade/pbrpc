@@ -1,20 +1,21 @@
 package pbrpc;
 
-import dos.parallel.ExchangeDescriptor.Exchange;
-import dos.parallel.client.ClientConnection;
-import dos.parallel.server.ServerExchange;
+
+import dos.parallel.ParallelEngine;
 
 public class TestServer {
 
      public static void main(String[] args) {
-         ServerExchange server = new ServerExchange();
-         server.build("127.0.0.1", 8181);
-         try {
-             Thread.sleep(1000000000);
-          } catch (InterruptedException e) {
-                 // TODO Auto-generated catch block
-                 e.printStackTrace();
-          }
+         ParallelEngine engine1 = new ParallelEngine();
+         engine1.bootServer("127.0.0.1", 9527);
+         while(true) {
+             try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+         }
      }
 
 }

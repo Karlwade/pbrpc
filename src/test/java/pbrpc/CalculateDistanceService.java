@@ -1,11 +1,12 @@
 package pbrpc;
 
 import java.awt.Point;
-import java.lang.reflect.Proxy;
 
 public class CalculateDistanceService {
 
-    public double calc(Point first, Point second) {
-        Proxy.newProxyInstance(loader, interfaces, h)
+    public Point calc(Point first, Point second) {
+        Point p = new Point();
+        p.setLocation(first.getX(), second.getY());
+        return p;
     }
 }

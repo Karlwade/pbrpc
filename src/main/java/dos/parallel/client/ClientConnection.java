@@ -10,6 +10,7 @@ import dos.parallel.ExchangeProcessor;
 import dos.parallel.FrameDecoder;
 import dos.parallel.FrameEncoder;
 import dos.parallel.IDoneCallback;
+import dos.parallel.ITaskProcessor;
 import dos.pbrpc.NettyConnection;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -27,8 +28,9 @@ public class ClientConnection {
     private ChannelFuture channel = null;
     private EventLoopGroup workerGroup = null;
     private IDoneCallback doneCallback = null;
-    
-    public ClientConnection(IDoneCallback doneCallback) {
+    private ITaskProcessor taskProcessor = null;
+    public ClientConnection(IDoneCallback doneCallback, ITaskProcessor taskProcessor) {
+        this.taskProcessor = taskProcessor;
         this.doneCallback = doneCallback;
     }
     
@@ -45,11 +47,10 @@ public class ClientConnection {
                 channel.pipeline().addLast("framedecoder",
                         new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, 1024 * 1024, 4, 8, 0, 0, true));
                 channel.pipeline().addLast("msgdecoder", new FrameDecoder());
-                channel.pipeline().addLast("exchange", new ExchangeProcessor(doneCallback));
+                channel.pipeline().addLast("exchange", new ExchangeProcessor(doneCallback, taskProcessor));
                 channel.pipeline().addLast("msgencoder", new FrameEncoder());
             }
         });
-
         
         try {
             channel = b.connect(host, port).sync();
@@ -63,5 +64,9 @@ public class ClientConnection {
     
     public void submit(Exchange exchange) {
         channel.channel().pipeline().writeAndFlush(exchange);
+    }
+    
+    public void close() {
+        this.workerGroup.shutdownGracefully();
     }
 }

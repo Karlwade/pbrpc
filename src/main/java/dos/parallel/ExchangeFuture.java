@@ -33,12 +33,12 @@ public class ExchangeFuture<V> implements Future<V> {
 
     @Override
     public V get() throws InterruptedException, ExecutionException {
-        synchronized (exchange) {
+        synchronized (exchange.getExchange()) {
             while(!exchange.getDone().get()) {
-                exchange.wait();
+                exchange.getExchange().wait();
             }
             try {
-                ObjectInputStream oin = new ObjectInputStream(exchange.getExchange().getResult().newInput());
+                ObjectInputStream oin = new ObjectInputStream(exchange.getDoneExchange().getResult().newInput());
                 return (V)oin.readObject();
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,5 +1,6 @@
 package pbrpc;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.protobuf.ServiceException;
@@ -25,7 +26,7 @@ public class TestDosMaster {
             System.out.println(response.getJob().getName());
             response = stub.getJob(new FakeRpcController(), request);
             System.out.println(response.getJob().getName());
-            
+            ByteBuffer.allocate(capacity)
         } catch (ServiceException e) {
             e.printStackTrace();
         }

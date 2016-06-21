@@ -53,7 +53,7 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
     private final AtomicLong lastTaskCompleted = new  AtomicLong(0); 
     
     public ParallelEngine() {
-        logStatus();
+       // logStatus();
     }
     
     private void logStatus() {
@@ -67,7 +67,7 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
                logger.info("engine with qps {} and running task {}", qps, taskRunning.get());
             }};
           
-        scheduler.scheduleWithFixedDelay(logStatusTask, 0,1000, TimeUnit.MILLISECONDS);
+        //scheduler.scheduleWithFixedDelay(logStatusTask, 0,1000, TimeUnit.MILLISECONDS);
     }
     
     public void addNodes(String host, int port) {

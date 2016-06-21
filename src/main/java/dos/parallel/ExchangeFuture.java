@@ -35,7 +35,7 @@ public class ExchangeFuture<V> implements Future<V> {
     public V get() throws InterruptedException, ExecutionException {
         synchronized (exchange.getExchange()) {
             while(!exchange.getDone().get()) {
-                exchange.getExchange().wait();
+                exchange.getExchange().wait(2000);;
             }
             try {
                 ObjectInputStream oin = new ObjectInputStream(exchange.getDoneExchange().getResult().newInput());
@@ -51,7 +51,21 @@ public class ExchangeFuture<V> implements Future<V> {
 
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        // TODO Auto-generated method stub
+        
+        synchronized (exchange.getExchange()) {
+            exchange.getExchange().wait(unit.toMillis(timeout));
+            if (!this.exchange.getDone().get()) {
+                throw new TimeoutException("message timeout");
+            }
+            try {
+                ObjectInputStream oin = new ObjectInputStream(exchange.getDoneExchange().getResult().newInput());
+                return (V)oin.readObject();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 

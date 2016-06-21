@@ -58,7 +58,6 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
     
     private void logStatus() {
         Runnable logStatusTask = new Runnable(){
-
             @Override
             public void run() {
                long current  = taskCompleted.get();

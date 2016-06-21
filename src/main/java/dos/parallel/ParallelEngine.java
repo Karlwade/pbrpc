@@ -142,13 +142,11 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
             @Override
             public void run() {
                 taskRunning.incrementAndGet();
-                logger.info("process exchange from {} with exchange {}", ctx.name(), exchange);
                 try {
                     Class serviceCLazz = Class.forName(exchange.getClass_());
                     Method[] allmethod = serviceCLazz.getDeclaredMethods();
                     for (Method m : allmethod) {
                         if (m.getName().equals(exchange.getMethod())) {
-                            logger.info("process exchange with method {}", m);
                             Object[] args = getArguments(exchange);
                             Object ret = m.invoke(serviceCLazz.newInstance(), args);
                             Builder builder = Exchange.newBuilder();

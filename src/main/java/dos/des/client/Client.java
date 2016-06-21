@@ -18,6 +18,9 @@ import dos.des.algorithm.Request;
 import dos.des.algorithm.Response;
 import dos.parallel.ParallelEngine;
 
+import ch.qos.logback.classic.Level;
+
+
 public class Client {
     private static final Logger logger = LoggerFactory.getLogger(Client.class);
     private ParallelEngine engine;
@@ -75,12 +78,15 @@ public class Client {
                 e.printStackTrace();
             }
         }
+        
         logger.info("test {} task with latency {} by local ", count, System.currentTimeMillis() - now);
     }
     
     
     
     public static void main(String[] args) {
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.INFO);
         Client client = new Client();
         while (true) {
             client.doRemoteTest(50000);

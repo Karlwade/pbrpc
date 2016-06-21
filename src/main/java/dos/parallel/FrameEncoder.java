@@ -34,6 +34,5 @@ public class FrameEncoder extends MessageToByteEncoder<ExchangeDescriptor.Exchan
         profiler.start("encode and write");
         exchange.writeTo(new ByteBufOutputStream(out));
         profiler.stop().log();
-        logger.info("buffer size {}", out.writerIndex());
     }
 }

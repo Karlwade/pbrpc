@@ -24,6 +24,7 @@ public class CalcPai {
         double pai = inCircleNum * 4 / num;
         return pai;
     }
+    
     // 50 ms
     public static void doCalcPi() {
         long now = System.currentTimeMillis();
@@ -31,7 +32,7 @@ public class CalcPai {
         for (long i = 1; i <= 10; i++) {
             double pai = CalcPai.CalcPaiByPointNumber(num);
         }
-        logger.info("calc pi using {}", System.currentTimeMillis() - now);
+        
     }
    
 }

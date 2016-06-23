@@ -19,7 +19,7 @@ do
 done
 cd $ENGINE_DIR && jar xf ../pbrpc-0.0.1-SNAPSHOT.jar
 cd $WORKDIR 
-JVM_HEAP_MAX=2046
-JVM_OPT="-server -Xmx${JVM_HEAP_MAX}m -Xms${JVM_HEAP_MAX}m -XX:SurvivorRatio=8 -XX:NewRatio=4 -XX:PermSize=128m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintCommandLineFlags -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelCMSThreads=4 -XX:+CMSClassUnloadingEnabled -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=1 -XX:CMSInitiatingOccupancyFraction=72"
+JVM_HEAP_MAX=4096
+JVM_OPT="-server -XX:MaxDirectMemorySize=1024M -Xmx${JVM_HEAP_MAX}m -Xms${JVM_HEAP_MAX}m -XX:SurvivorRatio=8 -XX:NewRatio=4 -XX:PermSize=128m -XX:MaxPermSize=256m -XX:+HeapDumpOnOutOfMemoryError -XX:+DisableExplicitGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintCommandLineFlags -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelCMSThreads=4 -XX:+CMSClassUnloadingEnabled -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=1 -XX:CMSInitiatingOccupancyFraction=72"
 java $JVM_OPT -Dfile.encoding=UTF-8 -cp $ENGINE_DIR:$jarfiles dos.des.client.Client
 

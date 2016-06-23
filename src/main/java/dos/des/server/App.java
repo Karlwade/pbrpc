@@ -11,7 +11,7 @@ public class App {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
         // TODO Auto-generated method stub
-        ParallelEngine engine1 = new ParallelEngine();
+        ParallelEngine engine1 = new ParallelEngine(50 * 1024 * 1024);
         engine1.bootServer("0.0.0.0", 9527);
         while(true) {
             try {

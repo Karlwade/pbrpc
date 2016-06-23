@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.profiler.Profiler;
 
-import dos.parallel.ExchangeDescriptor.Exchange;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,5 +33,6 @@ public class FrameEncoder extends MessageToByteEncoder<ExchangeDescriptor.Exchan
         profiler.start("encode and write");
         exchange.writeTo(new ByteBufOutputStream(out));
         profiler.stop().log();
+        header.release();
     }
 }

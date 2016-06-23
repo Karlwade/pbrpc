@@ -26,9 +26,13 @@ public class Client {
     private ParallelEngine engine;
     private ExecutorService executor = Executors.newFixedThreadPool(50);
     public Client() {
-        engine =  new ParallelEngine();
+        String limit = System.getProperty("limit");
+        if (limit == null) {
+            limit = "52428800";
+        }
+        engine =  new ParallelEngine(4* 1024);
         engine.bootServer("0.0.0.0", 9526);
-        engine.addNodes("10.5.232.189", 9527);
+        engine.addNodes("127.0.0.1", 9527);
     }
     public void doRemoteTest(int count) {
         long now = System.currentTimeMillis();

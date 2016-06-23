@@ -12,13 +12,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ByteString.Output;
 
@@ -51,9 +51,10 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
     private final AtomicLong taskCompleted = new AtomicLong(0); 
     
     private final AtomicLong lastTaskCompleted = new  AtomicLong(0); 
-    
-    public ParallelEngine() {
-       // logStatus();
+    private RateLimiter rateLimiter = null;
+    private Iterator<String> nodeIterator = null;
+    public ParallelEngine(double trafficLimit) {
+       rateLimiter = RateLimiter.create(trafficLimit);
     }
     
     private void logStatus() {
@@ -89,6 +90,7 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
         serverExchange.build(host, port);
     } 
     
+    
     @Override
     public void done(Long seq, Exchange exchange) {
         try {
@@ -105,6 +107,9 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
         }
     }
     
+    public void buildIterator() {
+        nodeIterator = clients.keySet().iterator();
+    }
     public <T> Future<T> submit(Class iface, String method, Object[] args) {
         Builder builder = Exchange.newBuilder();
         builder.setClass_(iface.getCanonicalName());
@@ -127,10 +132,21 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
         try {
             lock.lock();
             this.outBuffer.put(clientExchange.getExchange().getSequence(), clientExchange);
-            NodeInfo nodeInfo = clients.get(clients.keySet().iterator().next());
+            if (nodeIterator == null) {
+                this.buildIterator();
+            }
+            if (!nodeIterator.hasNext()) {
+                nodeIterator = clients.keySet().iterator();
+            }
+            String key = nodeIterator.next();
+            NodeInfo nodeInfo = clients.get(key);
+            lock.unlock();
+            rateLimiter.acquire(clientExchange.getExchange().getSerializedSize());
             nodeInfo.getConn().submit(clientExchange.getExchange());
         } finally {
-            lock.unlock();
+            if (lock.isLocked()) {
+                lock.unlock();
+            }
         }
         return future;
     }

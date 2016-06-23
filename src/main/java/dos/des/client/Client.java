@@ -54,7 +54,7 @@ public class Client {
                 e.printStackTrace();
             }
         }
-        logger.info("remote test {}", System.currentTimeMillis() - now);
+        logger.info("test {} task with latency {} by remote ", count, System.currentTimeMillis() - now);
     }
     
     

@@ -1,0 +1,32 @@
+option java_package = "dos.executor";
+
+option java_outer_classname = "ExecutorDescriptor";
+
+enum CompressType {
+	kSnappy = 0;
+}
+
+message CallableTask {
+	optional int64 seq = 1;
+	optional bytes data = 2;
+	optional string clazz = 3;
+	optional bool profile = 4;
+	optional CompressType compress_type = 5;
+}
+
+message CallableTaskResult {
+	optional int64 seq = 1;
+	optional string clazz = 2;
+	optional CompressType compress_type = 3;
+	optional string ex_clazz = 4;
+	optional bytes data = 5;
+	optional bool has_error = 6;
+	optional int64 decode_time = 7;
+	optional int64 encode_time = 8;
+	optional int64 exec_time = 9;
+}
+
+
+
+
+

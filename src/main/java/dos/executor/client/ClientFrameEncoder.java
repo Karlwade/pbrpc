@@ -14,7 +14,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 public class ClientFrameEncoder extends MessageToByteEncoder<ExecutorDescriptor.CallableTask> {
     private static final Logger logger = LoggerFactory.getLogger(ClientFrameEncoder.class);
-
     @Override
     protected void encode(ChannelHandlerContext ctx, ExecutorDescriptor.CallableTask task, ByteBuf out)
             throws Exception {

@@ -144,7 +144,7 @@ public class ParallelEngine implements IDoneCallback, ITaskProcessor{
             rateLimiter.acquire(clientExchange.getExchange().getSerializedSize());
             nodeInfo.getConn().submit(clientExchange.getExchange());
         } finally {
-            if (lock.isLocked()) {
+            if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
         }

@@ -30,7 +30,7 @@ public class Client {
         if (limit == null) {
             limit = "52428800";
         }
-        engine =  new ParallelEngine(4* 1024);
+        engine =  new ParallelEngine(Double.parseDouble(limit));
         engine.bootServer("0.0.0.0", 9526);
         engine.addNodes("127.0.0.1", 9527);
     }

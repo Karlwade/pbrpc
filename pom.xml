@@ -8,6 +8,13 @@
 	<jcl.slf4j.version>1.7.12</jcl.slf4j.version>
   </properties>
   <dependencies>
+  <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
+<dependency>
+    <groupId>com.rabbitmq</groupId>
+    <artifactId>amqp-client</artifactId>
+    <version>3.6.2</version>
+</dependency>
+  
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>

@@ -25,8 +25,3 @@ message CallableTaskResult {
 	optional int64 encode_time = 8;
 	optional int64 exec_time = 9;
 }
-
-
-
-
-

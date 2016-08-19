@@ -37,14 +37,14 @@ public class EsImporter {
         
         Settings settings = Settings.settingsBuilder()
                 .put("cluster.name", "waimai-c-bench").build();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress("yf-waimai-c-es-staging05.yf.sankuai.com", 8415);
+        InetSocketAddress inetSocketAddress = new InetSocketAddress("xx", 8415);
         List<InetSocketTransportAddress> servers = new ArrayList<InetSocketTransportAddress>();
         servers.add(new InetSocketTransportAddress(inetSocketAddress));
         transportClient = TransportClient.builder().settings(settings).build();
         for (InetSocketTransportAddress server : servers)
             transportClient.addTransportAddress(server);
         tairClient = new DefaultTairClient();
-        tairClient.setMaster("10.32.178.141:8411");
+        tairClient.setMaster("xxxx");
         tairClient.setGroup("sandbox");
         tairClient.setLocalAppKey("local key");
         tairClient.setRemoteAppKey("remote");

@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RpcContext {
 
-    private Map<Long, RpcMessage> context = new ConcurrentHashMap<Long, RpcMessage>();
+    private Map<Long, RpcMessageContext> context = new ConcurrentHashMap<Long, RpcMessageContext>();
 
-    public void put(Long id, RpcMessage msg) {
+    public void put(Long id, RpcMessageContext msg) {
         context.put(id, msg);
     }
 
-    public RpcMessage get(Long id) {
+    public RpcMessageContext get(Long id) {
         return context.get(id);
     }
 
